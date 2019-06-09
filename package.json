@@ -1,6 +1,6 @@
 {
   "name": "@ichest/cli",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "My chest for custom commands",
   "bin": {
     "ic": "lib/bin.js"
@@ -8,7 +8,12 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "play": "ts-node ./src/playground.ts"
+    "play": "ts-node ./src/playground.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/XGHeaven/ichest"
   },
   "author": "XGHeaven",
   "license": "MIT",
