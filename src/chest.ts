@@ -138,7 +138,9 @@ export class Chest {
     this.save()
   }
 
-  list() {}
+  list() {
+    return this.cache.cmds
+  }
 
   private createResource(target: string): Resource | null {
     if (!existsSync(target)) {
