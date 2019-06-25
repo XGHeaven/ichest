@@ -4,7 +4,7 @@ import { existsSync, statSync, promises, mkdirSync, writeFileSync, readFileSync,
 import { X_OK } from "constants";
 import { ExecutableResource } from "./resources/exectable";
 import { JavaScriptResource } from "./resources/js";
-import { download } from "./core/download";
+import { download, npmInstall } from "./core/download";
 
 export interface ChestConfig {
 
@@ -111,7 +111,7 @@ export class Chest {
 
   async add(target: string, options: {
     alias?: string,
-    type?: CmdType.GROUP
+    type?: CmdType
   } = {}) {
     let source: string | undefined
     if (target.startsWith('http://') || target.startsWith('https://')) {
@@ -123,7 +123,16 @@ export class Chest {
         // cannot download
         return
       }
+    } else if (target.startsWith('npm://')) {
+      // npm scripts, use `npm install` to install it
+      source = target
+      target = await npmInstall(this.downloadPath, source.replace('npm://', ''))
+      options.type = CmdType.ENTRY
+      // alias is ignored
+      delete options.alias
+      // dont't added to cache
     }
+
     if (!isAbsolute(target)) {
       target = resolve(process.cwd(), target)
     }
@@ -170,18 +179,37 @@ export class Chest {
 
   private findTarget(name: string) {
     // add custom group path to search
-    const cmds = [{type: CmdType.GROUP, path: this.customPath}, ...this.cache.cmds]
+    const cmds = [
+      {type: CmdType.GROUP, path: this.customPath},
+      // {type: CmdType.GROUP, path: join(this.downloadPath, '_node_package', 'node_modules', '.bin')},
+      ...this.cache.cmds
+    ]
     for (const cmd of cmds) {
-      if (cmd.type === CmdType.ENTRY && (cmd.alias === name || basename(cmd.path) === name)) {
-        return cmd.path
+      if (cmd.type === CmdType.ENTRY) {
+        if (cmd.source && cmd.source.startsWith('npm://')) {
+          try {
+            const pack = require(join(cmd.path, 'package.json'))
+            const bin = pack.bin || {}
+            if (name in bin) {
+              return resolve(cmd.path, bin[name])
+            }
+          } catch(e) {}
+        } else if (cmd.alias === name || basename(cmd.path) === name) {
+          return cmd.path
+        }
       }
 
       if (cmd.type === CmdType.GROUP) {
-        const files = readdirSync(cmd.path, {withFileTypes: true}).filter(f => f.isFile())
-        for (const file of files) {
-          if (basename(file.name) === name) {
-            return join(cmd.path, file.name)
+        try {
+          const files = readdirSync(cmd.path, {withFileTypes: true}).filter(f => f.isFile() || f.isSymbolicLink())
+          for (const file of files) {
+            if (basename(file.name) === name) {
+              return join(cmd.path, file.name)
+            }
           }
+        } catch(e) {
+          console.warn('not found', cmd.path)
+          continue
         }
       }
     }

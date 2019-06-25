@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/XGHeaven/ichest"
+    "url": "git+https://github.com/XGHeaven/ichest.git"
   },
   "author": "XGHeaven",
   "license": "MIT",
@@ -30,5 +30,13 @@
     "ink-table": "^2.0.1",
     "react": "^16.8.6",
     "yargs": "^13.2.4"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/XGHeaven/ichest/issues"
+  },
+  "homepage": "https://github.com/XGHeaven/ichest#readme",
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": []
 }

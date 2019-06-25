@@ -92,3 +92,4 @@ typings/
 
 # Custom
 src/playground.ts
+lib/playground.js

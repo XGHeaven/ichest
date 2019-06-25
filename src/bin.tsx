@@ -1,6 +1,6 @@
 import React from 'react'
 import {render} from 'ink'
-import { Chest } from './chest'
+import { Chest, CmdType } from './chest'
 import { homedir, EOL } from 'os';
 import { join } from 'path';
 import yargs from 'yargs'
@@ -29,14 +29,19 @@ const argv = yargs
     },
     alias: {
       type: 'string',
+    },
+    type: {
+      alias: 't',
+      type: 'string',
+      choices: Object.values(CmdType),
     }
   }, (args) => {
-    const {alias, target} = args
+    const {alias, target, type} = args
     const chest = createChest(args)
     if (alias) {
-      chest.add(alias, {alias: target})
+      chest.add(alias, {alias: target, type: type as CmdType})
     } else {
-      chest.add(target, {})
+      chest.add(target, {type: type as CmdType})
     }
   })
   .command('*', 'Run installed command', {}, args => {
