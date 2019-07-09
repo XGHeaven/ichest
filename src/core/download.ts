@@ -32,11 +32,17 @@ export async function download(place: string, url: string): Promise<string> {
 export async function npmInstall(place: string, pack: string): Promise<string> {
   place = join(place, '_node_package')
   await tryInitNodePackage(place)
-  await npm(place, 'install', pack, '--save')
+  await npm(place, 'install', pack, '--save', '--production')
   const infoString = await npmSlience(place, 'ls', pack, '--json', '--long')
   const info = JSON.parse(infoString)
   place = Object.values<any>(info.dependencies)[0].path
   return join(place)
+}
+
+export async function npmUninstall(place: string, pack: string): Promise<void> {
+  place = join(place, '_node_package')
+  // TODO: check package is avaliable
+  await npm(place, 'uninstall', pack, '--save')
 }
 
 export async function tryInitNodePackage(place: string) {
