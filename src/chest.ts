@@ -189,7 +189,7 @@ export class Chest {
       }
       const stat = await promises.stat(target)
       type = options.type || (stat.isDirectory() ? CmdType.GROUP : CmdType.ENTRY)
-      name = options.name || CmdType.NPM ? require(join(target, 'package.json')).name : basename(target, extname(target))
+      name = options.name || options.type === CmdType.NPM ? require(join(target, 'package.json')).name : basename(target, extname(target))
     } else {
       // unknow type
       return
@@ -235,7 +235,7 @@ export class Chest {
       default:
         if (cmd.source) {
           if (cmd.source.startsWith('http://') || cmd.source.startsWith('https://')) {
-            await rimraf.__promisify__(cmd.path)
+            rimraf.sync(cmd.path)
           }
         }
     }
