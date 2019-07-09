@@ -1,6 +1,6 @@
 {
   "name": "@ichest/cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "My chest for custom commands",
   "bin": {
     "ic": "bin/ic.js"
